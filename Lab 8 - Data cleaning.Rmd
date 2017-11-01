@@ -113,7 +113,10 @@ No missing values!
 I don't think so.
 
 12. Create a boxplot of your data (you can create an individual boxplot for each variable if there are too many variables in your dataset to meaningfully visualize them all in one plot). Are there any outliers? If so, what are they and to which variable do they correspond? Do any of these outliers seem like obvious errors? If so, why? 
-
+```{R}
+boxplot(ACLED_parsed$FATALITIES)
+boxplot(ACLED_parsed$YEAR)
+```
 
 13. For any outliers and/or obvious errors, what do you think is the best way to handle them (i.e. remove them entirely, run analyses including and excluding them and compare the results, manually change them to an appropriate measure of center, or something else?). 
 
