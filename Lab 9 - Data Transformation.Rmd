@@ -10,10 +10,10 @@ library(dplyr)
 library(readr)
 
 ###Vars
-gtd_filter <- c("iyear", "imonth", "country_txt", "latitude", "longitude",  "success", "nkill") 
+gtd_filter <- c("iyear", "imonth", "country_txt", "latitude", "longitude","nkill") 
 
 first3 <- c("iyear", "imonth", "country_txt") #make a list of the first 3 vars
-last3 <- c("longitude", "success", "nkill") #last 3 vars
+last3 <- c("latitude", "longitude", "nkill") #last 3 vars
 
 
 ```
