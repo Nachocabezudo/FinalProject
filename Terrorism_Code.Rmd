@@ -1,0 +1,65 @@
+---
+title: "Terrorism_RGDP_Codebook"
+author: "Ignacio Cabezudo"
+date: "November 14, 2017"
+output: pdf_document
+---
+
+Study Design
+
+    The purpose of this study is to examine the correlation between conflict events involving causualties and the economic growth potential of a country's population.The countries will be Nigeria, Niger, Chad, and Camaroon. The conflict events will only be those in which the terrorist group, Boko Haram has participated in. Economic growth potential will be measured using the International Monetary Fund's (IMF) Real GDP Growth annual percent change index. The conflict events and eath tolls are sourced from the National Consortium for the Study of Terrorism and Responses to Terrorism's (START) Global Terrorism Database. 
+
+National Consortium for the Study of Terrorism and Responses to Terrorism (START). (2017). Global Terrorism Database [Data file]. Retrieved from https://www.start.umd.edu/gtd
+
+International Monetary FundWorld Economic Outlook (IMF). (2017). World Economic
+Outlook Database [Data file] Retrieved from
+http://www.imf.org/external/pubs/ft/weo/2017/02/weodata/index.aspx
+
+    The years being investigated will begin in 1994 and continue until 2017. 
+
+Sampling
+
+The group of people represented in this study are those victims of Boko Haram's terrorist attacks, and the population
+
+
+Variable Index
+
+Global Terrorism Database
+Entry descriptions taken directly from their codebook: 
+
+Latitude
+(latitude)
+Numeric Variable
+This field records the latitude (based on WGS1984 standards) of the city in which the event occurred.
+
+Longitude
+(longitude)
+Numeric Variable
+This field records the longitude (based on WGS1984 standards) of the city in which the event occurred.
+
+Month
+(imonth)
+Numeric Variable
+This field contains the number of the month in which the incident occurred. In the case of incident(s) occurring over an extended period, the field will record the month when the incident was initiated. When the exact month of the incident is unknown, this will be recorded as “0”.
+
+
+Total Number of Fatalities
+(nkill)
+Numeric Variable
+
+This field stores the number of total confirmed fatalities for the incident. The
+number includes all victims and attackers who died as a direct result of the incident. Where there is evidence of fatalities, but a figure is not reported or it is too vague to be of use, this field remains blank. If information is missing regarding the number of victims killed in an attack, but perpetrator fatalities are known, this value will reflect only the number of perpetrators who died as a result of the incident. Likewise, if information on the number of perpetrators killed in an attack is missing, but victim fatalities are known, this field will only report the number of victims killed in the incident. Where several independent sources report different numbers of casualties, the database will usually reflect the number given by the most recent source. However, the most recent source will not be used if the source itself is of questionable validity
+or if the source bases its casualty numbers on claims made by a perpetrator group. When there are several “most recent” sources published around the same time, or there are concerns about the validity of a recent source, the majority  figure will be used. Where there is no majority figure among independent sources, the database will record the lowest proffered fatality figure, unless that figure comes from a source of questionable validity or there is another compelling reason to do otherwise. Conflicting reports of fatalities will be noted in the
+“Additional Notes” field.
+
+Note: Preservation of Statistical Accuracy
+When several cases are linked together, sources sometimes provide a cumulative
+fatality total for all of the events rather than fatality figures for each incident. In such cases, the preservation of statistical accuracy is achieved by distributing fatalities across the linked incidents. It will be noted in the “Additional Notes” field whenever cumulative totals are divided across multiple events. This method for preserving statistical accuracy is also used for calculating the values for the following fields when individual event totals are unknown: “Number of U.S. Fatalities,” “Number of Perpetrator Fatalities,” “Total Number of Injured,” “Number of U.S. Injured,” and “Number of Perpetrators Injured.”
+
+
+
+Year
+
+(iyear)
+Numeric Variable
+This field contains the year in which the incident occurred. In the case of incident(s) occurring over an extended period, the field will record the year  when the incident was initiated. 
