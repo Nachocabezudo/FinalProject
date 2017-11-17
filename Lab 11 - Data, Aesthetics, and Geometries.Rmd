@@ -1,0 +1,74 @@
+---
+title: "Lab 11 - Data, Aesthetics, & Geometries"
+author: "Your Name Here"
+date: "November 9, 2017"
+output: html_document
+---
+
+Complete the following exercises below. Knit together the PDF document and commit both the Lab 11 RMD file and the PDF document to Git. Push the changes to GitHub so both documents are visible in your public GitHub repository. 
+
+1. Which variables in your dataset are you interested in visualizing? Describe the level of measurement of these variables and what type of geography you think is appropriate to represent these variables. Give your reasoning for choosing the `geom_()` you selected. 
+
+The variables that will be visuallized will be nkill, iyear from the GTD dataset & year, country from the IMF dataset.
+
+
+
+2. Is your data in the proper format to visualize the data in the way you want? Why or why not? *If you need/want to change the structure of your data, do it below.* 
+
+I don't know, I'm having trouble deciding on this. Will no more after our meeting today. 
+
+
+
+3. Create at least two different exploratory plots of the variables you chose using the skills we covered in class today. What types of mapping aesthetics did you choose and why? What do these plots tell you about your data?
+
+```{R Plot 1}
+library(ggplot2)
+
+#Set the ranges for the data using filter
+
+plotNigeria <- filter(gtd_full, country_txt == "Nigeria" & iyear > 2005 & nkill > 1)
+plotimf <- filter(IMF_Real_GDP_Growth, Year > 2005 & Year < 2018)
+
+ggplot(plotNigeria, aes(x = iyear, y = log(nkill) )) +
+  geom_jitter() +
+  geom_line(data = plotimf, (aes( x = Year, y = Nigeria)))
+
+ggplot(plotNigeria, aes(x = iyear, y = log(nkill))) +
+  geom_area(fill = "light blue") +
+  geom_area(data = plotimf, (aes( x = Year, y = Nigeria)))
+  
+
+
+#plot1 <- ggplot(IMF_Real_GDP_Growth, aes( x = Year, y = Nigeria)) + geom_line(color = "red")
+#plot2 <- ggplot(IMF_Real_GDP_Growth, aes( x = Year, y = Chad)) + geom_line(color = "green")
+#ggplot(boko, aes(x = nkill, y = iyear)) + geom_smooth()
+
+
+
+```
+
+4. Create at least three variations of the plots you've already made by modifying some of the arguments we covered in class (i.e. `position`, `scale`, `size`, `linetype` etc.). Do any of these modifications help you understand your data better? Why or why not? Do any of them create a misleading interpretation of the relationships between your variables? If yes, how so?
+
+```{R Plots Modified}
+ggplot(plotNigeria, aes(x = iyear, y = log(nkill))) +
+  geom_jitter() +
+  geom_line(data = plotimf, (aes( x = Year, y = Nigeria)))
+
+
+
+```
+
+
+
+
+
+
+
+5. From the plots you've created thus far, do any of them seem appropriate for a general audience? Why or why not? If so, what do you think you'd still need to do to make them more suitable as explanatory visualizations? 
+
+
+
+
+
+
+
