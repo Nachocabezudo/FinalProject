@@ -69,7 +69,10 @@ ggplot(joinT, aes(x = Year, y = log(nkill))) +
  
 
 ggplot(joinT, aes(x = Year, y = RGDP, col = Countries)) +
-  geom_line()
+  geom_line() +
+  scale_x_continuous(
+    name = "Years", 
+    limits = c(2000, 2017)) 
 
 
 
