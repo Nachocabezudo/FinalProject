@@ -1,8 +1,8 @@
 ---
 title: "Lab 11 - Data, Aesthetics, & Geometries"
-author: "Your Name Here"
+author: "Ignacio Cabezudo"
 date: "November 9, 2017"
-output: html_document
+output: pdf_document
 ---
 
 Complete the following exercises below. Knit together the PDF document and commit both the Lab 11 RMD file and the PDF document to Git. Push the changes to GitHub so both documents are visible in your public GitHub repository. 
@@ -23,8 +23,12 @@ I don't know, I'm having trouble deciding on this. Will no more after our meetin
 library(ggplot2)
 library(tidyverse)
 library(hexbin)
+library(readxl)
 
 gtd_filter <- c("country_txt", "nkill", "iyear", "imonth")
+gtd_full <- read_csv("GTD FULL DB.csv")
+IMF_Real_GDP_Growth <- read_excel("IMF Real GDP Growth.xls")
+
 
 #Set the ranges for the data using filter
 plotTerror <- filter(gtd_full, country_txt == c("Nigeria", "Niger", "Chad", "Cameroon") & iyear > 2000 & nkill > 1)
