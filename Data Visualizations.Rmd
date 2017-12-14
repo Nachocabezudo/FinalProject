@@ -1,0 +1,130 @@
+---
+title: "Data Visulalization Assignment"
+author: "Ignacio Cabezudo"
+date: "December 13, 2017"
+output: pdf_document
+---
+
+```{R message = FALSE, warning = FALSE, echo = FALSE}
+library(ggplot2)
+library(tidyverse)
+library(readxl)
+library(ggthemes)
+
+gtd_filter <- c("country_txt", "nkill", "iyear", "nwound")
+gtd_full <- read_csv("GTD FULL DB.csv")
+IMF_Real_GDP_Growth <- read_excel("IMF Real GDP Growth.xls")
+
+
+#Set the ranges for the data using filter
+plotTerror <- filter(gtd_full, country_txt == c("Nigeria", "Niger", "Chad", "Cameroon"))
+plotTerror <- select(plotTerror,gtd_filter)
+
+#Fix the GDP growth data 
+temp <- gather(IMF_Real_GDP_Growth, key = Year, value = RGDP, ...= -X__1)
+
+#Rename columns to setup keys for join
+names(temp)[names(temp) == 'X__1'] <- 'Countries'
+names(plotTerror)[names(plotTerror) == 'country_txt'] <- 'Countries'
+names(plotTerror)[names(plotTerror) == 'iyear'] <- "Year"
+
+#Join the two datasets
+
+joinT <- merge(plotTerror, temp, by = c("Countries", "Year"))
+
+#Clean joinT data 
+#Get rid of NA's
+#joinT <- joinT[complete.cases(joinT),]
+#Create new catagory - totalcas 
+joinT[is.na(joinT)] <- 0
+joinT <- mutate(joinT, totalcas = (nkill + nwound))
+
+#Join the final dataset and remove excess
+test <- joinT %>%
+  select( -nwound) %>%
+  group_by(Countries, Year) %>%
+  mutate(TOTALCAS = sum(totalcas)) %>%
+  select(-nkill, -totalcas) %>%
+  distinct() %>%
+  ungroup() %>%
+  mutate(Year = as.character(Year)) %>%
+  right_join(temp, by = c("Countries", "Year"))
+
+test[is.na(test)] <- 0
+test <- select(test, -RGDP.x)
+test <- arrange(test, Countries, Year)
+test$Year <- as.numeric(as.character(test$Year))
+```
+
+```{R echo = FALSE, warning = FALSE}
+ggplot(test, aes(x = Year, y = RGDP.y, col = Countries)) +
+  geom_line(size = 2) +
+  scale_x_continuous(limits = c(2000, 2017)) +
+  #coord_cartesian(xlim = c(2000, 2018), ylim = c(-5, 35)) +
+  #geom_jitter(aes(x = Year, y = log(TOTALCAS + 1))) + 
+  geom_smooth(method = lm, color = "red") +
+  #geom_line(size = 1, data = temp, aes( x = as.numeric(Year), y = RGDP))+
+  #facet_grid(Countries ~ . , scales = "free", space = "free") +
+  #labs( x = "TOTALCAS", 
+  #y = "RGDP") +
+  ggtitle("Real GDP Growth 2000 - 2017") +
+  xlab("")+
+  ylab("") +
+  theme_economist() +
+  scale_colour_economist() +
+  theme(legend.position = "bottom")
+```
+
+  The purpose of the first graphic is to show the Real GDP growth of 4 countries over a period of 16 years. This time frame was chosen as it is the most active time for terrorism presented in the database available. The data was taken directly from the IMF database, and grouped to transform it from 1 row per coutry of all GDP data over the years, to each year, per country being it's own event.   
+
+
+
+
+```{R echo = FALSE, warning = FALSE}
+ggplot(test, aes(x = Year, y = RGDP.y, col = Countries)) +
+  geom_line(size = 2) +
+  scale_x_continuous(limits = c(1990, 2017)) +
+  #coord_cartesian(xlim = c(2000, 2018), ylim = c(-5, 35)) +
+  #geom_jitter(aes(x = Year, y = log(TOTALCAS + 1))) + 
+  geom_smooth(method = lm, color = "red") +
+  #geom_line(size = 1, data = temp, aes( x = as.numeric(Year), y = RGDP))+
+  #facet_grid(Countries ~ . , scales = "free", space = "free") +
+  #labs( x = "TOTALCAS", 
+  #y = "RGDP") +
+  ggtitle("Real GDP Growth 1990 - 2017") +
+  xlab("")+
+  ylab("") +
+  theme_economist() +
+  scale_colour_economist() +
+  theme(legend.position = "bottom")
+```
+
+The purpose of this graphic is to show that by expanding the window of time, the results of the trend can change. THe previous graphic was created to show an increasing negative GDP trend from 2000-2017, however when the window is opened further to include the years from 1990 to 2017, the overall RGDP trend is increasing positivly. 
+
+
+
+
+```{R echo = FALSE, warning = FALSE}
+
+ggplot(test, aes(x = Year, y = TOTALCAS, col = Countries)) +
+  geom_line(size = 2) +
+  #geom_smooth(color = "red") + 
+  scale_x_continuous(limits = c(2000, 2018)) +
+  #scale_y_continuous(limits = c(0, 3000))
+  #coord_cartesian(xlim = c(2000, 2017), ylim = c(0, 3000)) +
+  #geom_jitter(aes(x = Year, y = log(TOTALCAS + 1))) + 
+  geom_smooth(method = lm, color = "red") +
+  #geom_line(size = 1, data = test, aes( x = Year, y = RGDP.y))+
+  #facet_grid(Countries ~ . , scales = "fixed", space = "fixed", shrink = TRUE) +
+  #labs( x = "TOTALCAS", 
+  #y = "RGDP") +
+  ggtitle("Terrorism Casualties per Annum") +
+  xlab("")+
+  ylab("") +
+  theme_economist() +
+  scale_colour_economist() + 
+  theme(legend.position = "bottom")
+
+```
+
+In order to create this graphic, first data from the Global Terrorism Database was cleaned from 135 variables to 3 key variables: Year, NKill, and Nwound. All NA's for this dataset were replaced with 0. The sum of Nkill & Nwound were taken in a new variable: totalcas. This variable was then combined into the sum of totalcas after being grouped by year, resulting in TOTALCAS, which is a total casualty count per year for the 16 years in question. 
