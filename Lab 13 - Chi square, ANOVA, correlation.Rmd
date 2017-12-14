@@ -1,0 +1,153 @@
+---
+title: "Lab 13 - Chi square, ANOVA, & correlation"
+author: "Ignacio Cabezudo"
+date: "November 21, 2017"
+output:
+  pdf_document: default
+  html_document: default
+---
+
+Complete the following exercises below and include all code used to find the answers. Knit together the PDF document and commit both the Lab 13 RMD file and the PDF document to Git. Push the changes to GitHub so both documents are visible in your public GitHub repository.
+
+**1. Select two categorical variables from your dataset whose association you're interested in and conduct a chi-square test.** *If you only have continuous variables you will need to create categorical versions of these variables to make this work. You can do this using the `cut` function in mutate to add a new, categorical version of your variable to your dataset.*
+
+```{R messages = FALSE, warning = FALSE}
+library(ggplot2)
+library(tidyverse)
+library(gmodels)
+
+gtd_filter <- c("attacktype1", "success")
+gtd_full <- read_csv("GTD FULL DB.csv")
+dat <- select(gtd_full, gtd_filter)
+
+mosaicplot(table(dat), shade = TRUE)
+CrossTable(table(dat), 
+           digits = 2, 
+           prop.r = TRUE, 
+           prop.c = FALSE, 
+           prop.t = FALSE, 
+           prop.chisq = FALSE,
+           chisq = TRUE,
+           expected = FALSE)
+
+
+
+
+```
+
+  a. Describe any modifications made to your data for the chi-square test and the composition of the variables used in the test (e.g., study time is measured using a three-category ordinal variable with categories indicating infrequent studying, medium studying, and frequent studying).
+
+I created a list of 2 catagorical variables from my over all table. They are success and attack type.
+
+Success is a binary catagorical variable, and attacktype1 contains 9 catagories:
+
+1 - Assassination
+2 - Armed Assault
+3 - Bombing/Explosion
+4 - Hijacking 
+5 - Hostage Taking (Barricade Incident)
+6 - Hostage Taking (Kidnapping)
+7 - Facility/Infrastructure Attack
+8 - Unarmed Assault
+9 - Unknown
+
+
+  b. Does there appear to be an association between your two variables? Explain your reasoning.
+  
+  There is association between the variables, this is because the database itself is of terrorist attacks. We know that they have occured, and relative to the 170,350 events, only a small number were unsuccessful. 
+
+  c. What are the degrees of freedom for this test and how is this calculated?
+  
+  8, Which is total catagories (n), -1,  so 9-1. 
+
+  d. What if the critical value for the test statistic? What is the obtained value for the test statistic? 
+  
+  15.05 
+
+  e. How do you interpret the results of this test and the implications for your theoretical arguments about these two variables?
+  
+  The order of predictable success of attack type is as follows: 
+  
+  5 Hostage Taking, (Barricaded)
+  6 Hostage Taking, (Kidnapping)
+  2 Armed Assault
+  7 Facility/Infrastructure Attacks
+  3 Bombing/Explosion
+  4 Hijacking
+  8 Unarmed Assault
+  9 Unknown
+  1 Assassination
+
+
+**2. Select one continuous variable and one categorical variable from your dataset whose association you're interested in exploring.** *Again, note that you'll need to create a categorical version of your independent variable to make this work.*
+
+```{R}
+gtd_filter <- c("iyear", "attacktype1")
+dat <- select(gtd_full, gtd_filter)
+dat_results <- aov(attacktype1 ~ iyear, dat = dat)
+summary(dat_results)
+pairwise.t.test(iyear, dat, p.adjust="bonferroni")
+```
+
+  a. Describe any modifications made to your data for the ANOVA test and the composition of the variables used in the test (e.g., college rank is measured using a four-category variable with values indicating freshman, sophomore, junior, and senior class). 
+  
+  For this exercise, iyear and attacktype1 were chosen using the same method as before, selecting them out of the main dataset. iyear is the year an attack took place, attacktype1 is the type of attack.
+  
+1 - Assassination
+2 - Armed Assault
+3 - Bombing/Explosion
+4 - Hijacking 
+5 - Hostage Taking (Barricade Incident)
+6 - Hostage Taking (Kidnapping)
+7 - Facility/Infrastructure Attack
+8 - Unarmed Assault
+9 - Unknown
+
+  b. What are the degrees of freedom (both types) for this test and how are they calculated?
+
+The degrees of freedom is 1. I'm not sure why it's 1 for this test. Confused about ANOVA. 
+
+  c. What is the obtained value of the test statistic?
+  
+  No idea, can't get the t test to function. 
+  
+  
+
+  d. What do the resuts tell you about the association between these two variables? What does this mean for your theoretical arguments about these variables?
+  
+  There is no association between the attack type and the year
+
+
+
+**3. Select two continuous variables from your dataset whos association you're interested in exploring.**
+```{R}
+gtd_filter <- c("nwound", "nkill")
+dat <- select(gtd_full, gtd_filter)
+dat <- filter(dat, nwound > 1 & nkill > 10)
+summary(dat)
+
+plot(dat$nkill, dat$nwound) 
+
+```
+
+
+  a. What is the correlation between these two variables? 
+   
+   .72
+
+  b. Create a scatterplot of the variables you selected. Does the correlation coefficient accurately represent the relationship between these two variables? Why or why not? Not very accuratly, but that is because of an axis problem. For some reason, even when I try to plot this with ggplot I end up with only 1 dot. The major outliers are probably the cause
+
+  c. Create a correlation matrix of your data using the `ggcorr` function from the `GGally` package. Be sure to label each cell with the correlation coefficient. 
+```{R}
+library(GGally)
+ggcorr(dat, method = "pairwise", label = TRUE)
+
+```
+  d. What does this visual representation of correlation coefficients tell you about your data? Are there any relationships (or lack thereof) that are surprising to you? Why or why not?
+  
+  Well, given that they are 2 continues variables, not much. This just shows me that there IS a correlation betwen nkill & nwound.  I *THINK* that what it means is that for every person killed .72 people are wounded.  That probably translates into a % chance of being wounded, but I don't know the math to do it. 
+
+  e. What are the limitations of correlation coefficients? Can they ever be misleading? If so, in what ways? 
+  
+  Correlation coeffs can most certainly be misleading. The context of the correlation is key. 
+

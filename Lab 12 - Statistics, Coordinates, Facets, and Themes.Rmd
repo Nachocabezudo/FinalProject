@@ -8,10 +8,9 @@ output: pdf_document
 Complete the following exercises below. Knit together the PDF document and commit both the Lab 12 RMDfile and the PDF document to Git. Push the changes to GitHub so both documents are visible in your public GitHub repository.
 
 1. Choose one or more graphics you created for Lab 11 and either experiment with the underlying statistical layer if it already has one (i.e. if you made a histogram experiement with different bin widths) or add a separate statistical layer to your plot (i.e. a smooothing curve). Choose something you think will offer meaningful insight and describe why you made the choice you did. What additional information does this provide viewers of your graphic?
-```{R}
+```{R message = FALSE, warning = FALSE}
 library(ggplot2)
 library(tidyverse)
-library(hexbin)
 library(readxl)
 
 gtd_filter <- c("country_txt", "nkill", "iyear", "imonth", "nwound")
@@ -20,7 +19,7 @@ IMF_Real_GDP_Growth <- read_excel("IMF Real GDP Growth.xls")
 
 
 #Set the ranges for the data using filter
-plotTerror <- filter(gtd_full, country_txt == c("Nigeria", "Niger", "Chad", "Cameroon") & iyear > 2000)
+plotTerror <- filter(gtd_full, country_txt == c("Nigeria", "Niger", "Chad", "Cameroon"))
 plotTerror <- select(plotTerror,gtd_filter)
 
 #Fix the GDP growth data 
@@ -35,16 +34,25 @@ names(plotTerror)[names(plotTerror) == 'iyear'] <- "Year"
 
 joinT <- merge(plotTerror, temp, by = c("Countries", "Year"))
 
+#Clean joinT data 
+#Get rid of NA's
+#joinT <- joinT[complete.cases(joinT),]
+#Create new catagory - totalcas 
+joinT[is.na(joinT)] <- 0
+joinT <- mutate(joinT, totalcas = (nkill + nwound))
+
+
+
 #Make some plots
 
-ggplot(joinT, aes(x = Year, y = log(nkill), col = Countries )) +
-  geom_jitter()+
-  geom_smooth()
+ggplot(joinT, aes(x = Year, y = totalcas, col = Countries )) +
+  geom_jitter()#+
+  #geom_smooth()
 
 
-ggplot(joinT, aes(y = RGDP, x = Year, col = Countries)) +
-  geom_line(size = 2)+
-  geom_smooth()
+ggplot(temp, aes(y = as.numeric(RGDP), x = as.numeric(Year), col = Countries)) +
+  geom_line() #+
+  #geom_smooth()
   
   
 
@@ -54,29 +62,58 @@ I'm honestly at a loss with what to do with the data as far as statistical manip
 
 2. With the same or a different plot created in Lab 11, experiment with zooming in on specific areas of your graphic and changing the aspect ratio. Are their any benefits/drawbacks with either or both of these approaches for the visualizations you've created? What are they? 
 
-```{R}
-#Zooming in on the point where RGDP drops in Nigeria with dots and smooth for
-#nkill data
+```{R  message = FALSE, warning = FALSE}
+#Zooming in on most active portion of data
 
-ggplot(joinT, aes(x = Year, y = log(nkill), col = Countries)) +
+
+ggplot(joinT, aes(x = Year, y = totalcas, col = Countries)) +
   geom_jitter() +
-  coord_cartesian(xlim = c(2013, 2015), ylim = c(0, 7)) +
-  geom_smooth() + 
-  geom_line(data = dat, aes( x = Year, y = RGDP))
+  
+  coord_cartesian(xlim = c(2005, 2017), ylim = c(-8, 36)) +
+  geom_line(data = temp, size = 1, aes( x = as.numeric(Year), y = RGDP, col = Countries))
 
 
 ```
 
 
 3. Try facetting a plot you have made by another categorical variable in your data (this can even be as simple as Male/Female). What is the difference between `facet_wrap()` and `facet_grid()`? How might facetting be useful in data visualization?
-```{R}
-ggplot(joinT, aes(x = Year, y = log(nkill), col = Countries)) +
-  geom_jitter() +
-  coord_cartesian(xlim = c(2000, 2018), ylim = c(0, 7)) +
-  geom_smooth() + 
-  geom_line(data = joinT, aes( x = Year, y = RGDP))+
-  facet_grid(. ~ Countries, scales = "free", space = "free") 
+```{R message = FALSE, warning = FALSE}
+### CODE DONE IN CLASS ###
+ 
+test <- joinT %>%
+  select(-imonth, -nwound) %>%
+  group_by(Countries, Year) %>%
+  mutate(TOTALCAS = sum(totalcas)) %>%
+  select(-nkill, -totalcas) %>%
+  distinct() %>%
+  ungroup() %>%
+  mutate(Year = as.character(Year)) %>%
+  right_join(temp, by = c("Countries", "Year"))
+
+test[is.na(test)] <- 0
+test <- select(test, -RGDP.x)
+test <- arrange(test, Countries, Year)
+test$Year <- as.numeric(as.character(test$Year))
+
+nigeriaTest <- filter(test, Countries == "Nigeria" & Year > 2000 & Year < 2018)
+nigerTest <- filter(test, Countries == "Niger")
+chadTest <- filter(test, Countries == "Chad")
+cameroonTest <- filter(test, Countries == "Cameroon")
+
+nigeriaMod <- lm(RGDP.y ~ TOTALCAS, data = nigeriaTest)
+nigerMod <- lm(RGDP.y ~ TOTALCAS, data = nigerTest)
+chadMod <- lm(RGDP.y ~ TOTALCAS, data = chadTest)
+cameroonMod <- lm(RGDP.y ~ TOTALCAS, data = cameroonTest)
+
+ggplot(nigeriaTest, aes(x = TOTALCAS, y  = RGDP.y)) + 
+  geom_point()+
+  coord_cartesian() +
+  geom_smooth(method = "lm") +
+  theme_classic()
   
+  
+
+
 ```
 
 Faceting seems perfect for me to show a visual comparrison between the RGDP of each country and the number killed. 
@@ -87,28 +124,57 @@ Faceting seems perfect for me to show a visual comparrison between the RGDP of e
   * text size
   * legend position
   
-```{R}
-ggplot(joinT, aes(x = Year, y = log(nkill + nwound), col = Countries)) +
-  geom_jitter() +
-  coord_cartesian(xlim = c(2003, 2018), ylim = c(0, 15)) +
-  geom_smooth() + 
-  geom_line(size = 1, data = joinT, aes( x = Year, y = RGDP))+
-  facet_grid(. ~ Countries, scales = "free", space = "free") +
-  labs( x = "Year", 
-        y = "Number Affected") +
-  ggtitle("Terrorism and GDP") +
-  theme(
-    legend.position = "bottom",
-    legend.title = element_text(size = 15),
-    legend.text = element_text(size = 10),
-    panel.grid.major = element_blank(),
-    panel.grid.minor = element_blank(),
-    panel.background = element_rect(fill = 'grey95'),
-    axis.text.x = element_text(angle = 45, vjust=0.5),
-    axis.title.x = element_text(color="red", vjust=-0.5),
-    axis.title.y = element_text(color="red" , vjust=0.5),
-    axis.ticks = element_line(colour = "firebrick1"),
-    plot.title = element_text(size = rel(1.5)))
+```{R message = FALSE, warning = FALSE}
+ggplot(test, aes(x = Year, y = RGDP.y, col = Countries)) +
+  geom_line() +
+  #geom_smooth(color = "red") + 
+  scale_x_continuous(limits = c(2000, 2017)) +
+  #coord_cartesian(xlim = c(2000, 2018), ylim = c(-5, 35)) +
+  geom_jitter(aes(x = Year, y = log(TOTALCAS + 1))) + 
+  geom_smooth(method = lm, color = "blue") +
+  #geom_line(size = 1, data = temp, aes( x = as.numeric(Year), y = RGDP))+
+  #facet_grid(Countries ~ . , scales = "free", space = "free") +
+  #labs( x = "TOTALCAS", 
+        #y = "RGDP") +
+  ggtitle("Terrorism's effect on Real GDP") +
+  xlab("Year")+
+  ylab("Real GDP Growth") +
+  theme_classic() +
+  theme(legend.position = "bottom")
+
+
+ggplot(test, aes(x = Year, y = (TOTALCAS + 1), col = Countries)) +
+  geom_line() +
+  #geom_smooth(color = "red") + 
+  scale_x_continuous(limits = c(2000, 2017)) +
+  #coord_cartesian(xlim = c(2000, 2018), ylim = c(-5, 35)) +
+  #geom_jitter(aes(x = Year, y = log(TOTALCAS + 1))) + 
+  geom_smooth(method = lm, color = "blue") +
+  #geom_line(size = 1, data = temp, aes( x = as.numeric(Year), y = RGDP))+
+  #facet_grid(Countries ~ . , scales = "free", space = "free") +
+  #labs( x = "TOTALCAS", 
+        #y = "RGDP") +
+  ggtitle("Terrorism's effect on Real GDP") +
+  xlab("Year")+
+  ylab("Total Casualties from Terrorism") +
+  theme_classic() +
+  theme(legend.position = "bottom")
+  
+  
+  
+  
+  #theme(
+    #legend.position = "bottom",
+    #legend.title = element_text(size = 15),
+   # legend.text = element_text(size = 10),
+   # panel.grid.major = element_blank(),
+   # panel.grid.minor = element_blank(),
+   # panel.background = element_rect(fill = 'grey95'),
+   # axis.text.x = element_text(angle = 45, vjust=0.5),
+   # axis.title.x = element_text(color="red", vjust=-0.5),
+   # axis.title.y = element_text(color="red" , vjust=0.5),
+   # axis.ticks = element_line(colour = "firebrick1"),
+    #plot.title = element_text(size = rel(1.5)))
     
 
 
@@ -118,40 +184,48 @@ ggplot(joinT, aes(x = Year, y = log(nkill + nwound), col = Countries)) +
 
 5. Create three versions of a graphic of your choice using different built-in themes or a theme created from `ggthemes`. Which ones do you think are best for presenting in an academic journal? A poster session? What are the qualities of the themes that you choice that you think make them more appropriate for presentation?
 
-```{R}
-ggplot(joinT, aes(x = Year, y = log(nkill + nwound), col = Countries)) +
+```{R message = FALSE, warning = FALSE}
+ggplot(joinT, aes(x = Year, y = totalcas, col = Countries)) +
   geom_jitter() +
   coord_cartesian(xlim = c(2003, 2018), ylim = c(0, 15)) +
   geom_smooth() + 
-  geom_line(size = 1, data = joinT, aes( x = Year, y = RGDP))+
+  geom_line(size = 1, data = temp, aes( x = as.numeric(Year), y = RGDP))+
   facet_grid(. ~ Countries, scales = "free", space = "free") +
   labs( x = "Year", 
         y = "Number Affected") +
   ggtitle("Terrorism and GDP") +
   theme_bw()
 
-ggplot(joinT, aes(x = Year, y = log(nkill + nwound), col = Countries)) +
+ggplot(joinT, aes(x = Year, y = totalcas, col = Countries)) +
   geom_jitter() +
   coord_cartesian(xlim = c(2003, 2018), ylim = c(0, 15)) +
   geom_smooth() + 
-  geom_line(size = 1, data = joinT, aes( x = Year, y = RGDP))+
+  geom_line(size = 1, data = temp, aes( x = as.numeric(Year), y = RGDP))+
   facet_grid(. ~ Countries, scales = "free", space = "free") +
   labs( x = "Year", 
         y = "Number Affected") +
   ggtitle("Terrorism and GDP")+
   theme_classic()
 
-ggplot(joinT, aes(x = Year, y = log(nkill + nwound), col = Countries)) +
+ggplot(joinT, aes(x = Year, y = totalcas, col = Countries)) +
   geom_jitter() +
   coord_cartesian(xlim = c(2003, 2018), ylim = c(0, 15)) +
   geom_smooth() + 
-  geom_line(size = 1, data = joinT, aes( x = Year, y = RGDP))+
+  geom_line(size = 1, data = temp, aes( x = as.numeric(Year), y = RGDP))+
   facet_grid(. ~ Countries, scales = "free", space = "free") +
   labs( x = "Year", 
-        y = "Number Affected") +
+        y = "Total Casulties") +
   ggtitle("Terrorism and GDP")+
   theme_light()
 
 ```
 
 
+```{R}
+
+stargazer(nigeriaMod, chadMod, nigerMod, cameroonMod,title="Regression Results",
+          dep.var.labels=c("Real GDP Growth"),
+          covariate.labels= ("Terrorist Attacks"),
+          omit.stat=c("LL","ser","f"), ci=TRUE, ci.level=0.90, single.row=TRUE)
+
+```
