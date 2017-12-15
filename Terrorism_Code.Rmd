@@ -1,5 +1,5 @@
 ---
-title: "Terrorism_RGDP_Codebook"
+title: "Terrorism RGDP Codebook"
 author: "Ignacio Cabezudo"
 date: "November 14, 2017"
 output: pdf_document
@@ -7,42 +7,47 @@ output: pdf_document
 
 Study Design
 
-    The purpose of this study is to examine the correlation between conflict events involving causualties and the economic growth potential of a country's population.The countries will be Nigeria, Niger, Chad, and Camaroon. The conflict events will only be those in which the terrorist group, Boko Haram has participated in. Economic growth potential will be measured using the International Monetary Fund's (IMF) Real GDP Growth annual percent change index. The conflict events and eath tolls are sourced from the National Consortium for the Study of Terrorism and Responses to Terrorism's (START) Global Terrorism Database. 
+  The purpose of this study is to search for a correlation between conflict events involving casualties caused by terror events and the economic growth potential of a country's population. The countries will be Nigeria, Niger, Chad, and Cameroon. Economic growth potential will be measured using the International Monetary Fund's (IMF) Real GDP Growth annual percent change index. The conflict events and death tolls are sourced from the National Consortium for the Study of Terrorism and Responses to Terrorism's (START) Global Terrorism Database. 
 
-National Consortium for the Study of Terrorism and Responses to Terrorism (START). (2017). Global Terrorism Database [Data file]. Retrieved from https://www.start.umd.edu/gtd
+Data Files:
+GTD Database - 
+Entries - 170,350
+Variables - 135
 
-International Monetary FundWorld Economic Outlook (IMF). (2017). World Economic
+Each entry consists of data on one terror event. These terror events are found through a machine learning algorithm that sifts through thousands of news article per month. The events that are chosen are sent to a team of researchers at the University of Maryland. The teams are grouped by several specialties and verify the information to the best of their abilities before they are added to the database. 
+
+
+National Consortium for
+the Study of Terrorism and Responses to Terrorism (START). (2017). Global Terrorism Database [Data file]. Retrieved from https://www.start.umd.edu/gtd
+
+International Monetary Fund World Economic Outlook (IMF). (2017). World Economic
 Outlook Database [Data file] Retrieved from
 http://www.imf.org/external/pubs/ft/weo/2017/02/weodata/index.aspx
 
-    The years being investigated will begin in 1994 and continue until 2017. 
+The years being investigated will begin in 1991 and continue until 2017. 
 
 Sampling
 
-The group of people represented in this study are those victims of Boko Haram's terrorist attacks, and the population
+The group of people represented in this study are those victims of terrorist attacks in the selected countries. They are represented by the variable TOTALCAS, which contains the total casualties per year. It should be noted that the nwound variable contains both attackers and victims in its count. 
 
 
 Variable Index
 
+Countries 
+(countries)
+The country an attack has taken place
+
+Real Gross Domestic Product
+(RGDP)
+The RGDP differs from the nominal GDP in that it has been adjusted for inflation. GDP is the total value of goods produced and services provided in a country during one year.
+
+Total Casualties
+(TOTALCAS)
+Total casualty count per year. This variable was created by first finding the sum of nkill and nwound for each event in the database, and then finding the sum of that total by year. 
+
+
 Global Terrorism Database
 Entry descriptions taken directly from their codebook: 
-
-Latitude
-(latitude)
-Numeric Variable
-This field records the latitude (based on WGS1984 standards) of the city in which the event occurred.
-
-Longitude
-(longitude)
-Numeric Variable
-This field records the longitude (based on WGS1984 standards) of the city in which the event occurred.
-
-Month
-(imonth)
-Numeric Variable
-This field contains the number of the month in which the incident occurred. In the case of incident(s) occurring over an extended period, the field will record the month when the incident was initiated. When the exact month of the incident is unknown, this will be recorded as “0”.
-
-
 Total Number of Fatalities
 (nkill)
 Numeric Variable
@@ -56,10 +61,15 @@ Note: Preservation of Statistical Accuracy
 When several cases are linked together, sources sometimes provide a cumulative
 fatality total for all of the events rather than fatality figures for each incident. In such cases, the preservation of statistical accuracy is achieved by distributing fatalities across the linked incidents. It will be noted in the “Additional Notes” field whenever cumulative totals are divided across multiple events. This method for preserving statistical accuracy is also used for calculating the values for the following fields when individual event totals are unknown: “Number of U.S. Fatalities,” “Number of Perpetrator Fatalities,” “Total Number of Injured,” “Number of U.S. Injured,” and “Number of Perpetrators Injured.”
 
-
+Total Number of Injured
+(nwound)
+Numeric Variable
+This field records the number of confirmed non-fatal injuries to both perpetrators and victims. It follows the conventions of the “Total Number of Fatalities” field described above.
 
 Year
 
 (iyear)
 Numeric Variable
 This field contains the year in which the incident occurred. In the case of incident(s) occurring over an extended period, the field will record the year  when the incident was initiated. 
+
+
